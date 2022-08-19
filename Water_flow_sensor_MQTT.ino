@@ -20,6 +20,8 @@ int FlowSensorState = 0;
 float CountFlow = 0;
 float CountLitre = 0;
 long CountStart = 0;
+long CountNotify = 0;
+float CountLast = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -56,7 +58,9 @@ void setup_wifi() {
   }
 
   Serial.println("");
-  Serial.println("[WIFI]WiFi conectada");
+  Serial.print("[WIFI]WiFi conectada (");
+  Serial.print(ssid);
+  Serial.println(")");
   Serial.print("[WIFI]IP: ");
   Serial.print(WiFi.localIP());
   Serial.println("");
@@ -79,7 +83,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 void reconnect() {
-  Serial.print("[MQTT]Intentando conectar a servidor MQTT... ");
+  Serial.print("[MQTT]Intentando conectar a servidor MQTT (");
+  Serial.print(mqtt_server);
+  Serial.print(":");
+  Serial.print(mqtt_port);
+  Serial.print(") ...");
   // Bucle hasta conseguir conexión
   while (!clientMqtt.connected()) {
     Serial.print(".");
@@ -87,6 +95,8 @@ void reconnect() {
     if (clientMqtt.connect(mqtt_id)) { // Ojo, para más de un dispositivo cambiar el nombre para evitar conflicto
       Serial.println("");
       Serial.println("[MQTT]Conectado al servidor MQTT");
+      Serial.print("[MQTT]Publicando en ");
+      Serial.println(mqtt_pub_topic_waterflow);
       // Once connected, publish an announcement...
       clientMqtt.publish(mqtt_sub_topic_healthcheck, "starting");
       // ... and subscribe
@@ -114,21 +124,30 @@ void loop() {
     digitalWrite(LED_BUILTIN, HIGH) ;    // turn the LED off by making the voltage LOW
   }
   long now_sensors = millis();
-  if (now_sensors - CountStart > update_time_sensors) {
-    CountStart = now_sensors;
+  if (now_sensors - CountStart > time_check_sensors) {
     Serial.println("Resume--------------------------------------");
     if (CountFlow > 1500000 || CountFlow == 0) {
-      clientMqtt.publish(mqtt_pub_topic_waterflow, "0");  
+      if (now_sensors - CountNotify > time_max_update_sensors || CountLast != 0) {
+        clientMqtt.publish(mqtt_pub_topic_waterflow, "0");
+        CountNotify = now_sensors;
+        CountLast = 0;
+      }
     } else {
       //Flow pulse characteristics (6.6*L/Min)
       CountLitre = CountFlow*6.6/2815562;
       snprintf (msg, 10, "%6.2f", CountLitre);
-      clientMqtt.publish(mqtt_pub_topic_waterflow, msg);   
+      clientMqtt.publish(mqtt_pub_topic_waterflow, msg);
+      CountNotify = now_sensors;
+      CountLast = CountFlow;
       Serial.print(msg);
       Serial.println(" liters");
     }
+    Serial.print("CountFlow: ");
     Serial.println(CountFlow);
+    Serial.print("CountLast: ");
+    Serial.println(CountLast);
     Serial.println("");
     CountFlow = 0;
+    CountStart = now_sensors;
   }  
 }
