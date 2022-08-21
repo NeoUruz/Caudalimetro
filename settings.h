@@ -1,16 +1,25 @@
 // WiFi Configuration
-const char* ssid = "";
-const char* password = "";
+const char* WIFI_SSID = "";
+const char* WIFI_PASSWORD = "";
 
 // MQTT Cibfiguration
-const char* mqtt_server = "192.168.1.10";
-const int mqtt_port = 1883;
-const char* mqtt_id = "caudalimetro";
-const char* mqtt_pub_topic_waterflow = "home/caudalimetro/water";
-const char* mqtt_sub_topic_healthcheck = "home/caudalimetro";
-const char* mqtt_sub_topic_operation = "home/caudalimetro/operation";
+const char* MQTT_SERVER = "192.168.1.10";
+const int   MQTT_PORT   = 1883;
+const char* MQTT_ID     = "water_flow";
+const char* MQTT_PUB_TOPIC_WATERFLOW = "home/water_flow/water";
+const char* MQTT_PUB_TOPIC_HEALTCHECK = "home/water_flow";
+const char* MQTT_PUB_TOPIC_OPERATION = "home/water_flow/operation";
 
 // Other params
-const int time_check_sensors = 10000;
-const int time_max_update_sensors = 60000;
-const int FlowSensorPin = 4;
+const int TIME_DELAY_CHECK = 10000;
+const int TIME_FORCE_UPDATE = 60000;
+const int SENSOR_PIN = 4;
+const int SENSOR_INTERVAL = 2500;
+
+// YF-S201
+//const float factorK = 7.5;
+// FS300A
+//const float factorK = 5.5;
+// FS400A
+//const float factorK = 3.5;
+const float factorK = 4.8;
