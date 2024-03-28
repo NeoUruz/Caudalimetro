@@ -94,7 +94,7 @@ void reconnect() {
   while (!clientMqtt.connected()) {
     Serial.print(".");
     // Intento de conexión
-    if (clientMqtt.connect(MQTT_ID)) {
+    if (clientMqtt.connect(MQTT_ID, MQTT_USER, MQTT_PASS)) {
       Serial.println("");
       Serial.println("[MQTT]Conectado al servidor MQTT");
       Serial.print("[MQTT]Publicando en ");
