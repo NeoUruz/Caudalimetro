@@ -3,9 +3,11 @@ const char* WIFI_SSID = "";
 const char* WIFI_PASSWORD = "";
 
 // MQTT Cibfiguration
-const char* MQTT_SERVER = "192.168.1.10";
+const char* MQTT_SERVER = "172.21.2.10";
 const int   MQTT_PORT   = 1883;
 const char* MQTT_ID     = "water_flow";
+const char* MQTT_USER   = "";
+const char* MQTT_PASS   = "";
 const char* MQTT_PUB_TOPIC_WATERFLOW = "home/water_flow/water";
 const char* MQTT_PUB_TOPIC_HEALTCHECK = "home/water_flow";
 const char* MQTT_PUB_TOPIC_OPERATION = "home/water_flow/operation";
